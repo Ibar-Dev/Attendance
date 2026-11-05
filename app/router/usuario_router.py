@@ -1,9 +1,11 @@
-from pygments.styles.night_owl import NightOwlStyle
+
 from fastapi import APIRouter
 
 from app.models.usuario import Usuario
-from app.services.usuario_service import listar_usuarios, obtener_usuario_por_email, obtener_usuario_por_id
-
+from app.services.usuario_service import (
+    listar_usuarios,
+    obtener_usuario_por_id,
+)
 
 router = APIRouter(
     prefix="/usuarios",

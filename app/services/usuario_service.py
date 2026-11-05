@@ -1,3 +1,4 @@
+# app/services/usuario_service.py
 from pydantic import EmailStr
 from sqlmodel import Session, select
 

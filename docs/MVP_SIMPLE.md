@@ -1,337 +1,411 @@
-# MVP Simple · Control de attendance
+# Diseño Técnico MVP
 
-Este MVP mantiene la idea inicial del proyecto: ofrecer un flujo sencillo de acceso y consulta de información, construyendo una base sólida para futuras funcionalidades relacionadas con asistencia, presencia y reuniones.
+# Attendance Management System
 
----
+## 1. Objetivo
 
-# Objetivo
+Desarrollar una aplicación web para registrar la asistencia de participantes a eventos presenciales mediante una interfaz sencilla y una API REST.
 
-Validar una primera versión funcional que permita:
+El sistema permitirá:
 
-- Acceso de usuarios mediante autenticación básica.
-- Visualización de información resumida de actividad.
-- Persistencia de datos mediante SQLite.
-- Preparar la arquitectura para futuras ampliaciones sin incrementar complejidad innecesaria.
+- Registrar asistencias.
+- Consultar asistencias registradas.
+- Filtrar registros.
+- Garantizar la trazabilidad de cada registro mediante identificadores únicos.
 
----
-
-# Funcionalidades incluidas
-
-## Backend FastAPI
-
-Endpoints disponibles:
-
-- `POST /api/login`
-  - Valida credenciales de usuario.
-
-- `GET /api/mvp/resumen`
-  - Devuelve información resumida para mostrar en la interfaz.
-
-## Frontend Angular
-
-Incluye:
-
-- Formulario de inicio de sesión.
-- Mensajes de validación.
-- Visualización de métricas básicas.
-- Preparado para incorporar nuevas funcionalidades en futuras iteraciones.
+> Este documento define exclusivamente los aspectos técnicos del MVP y excluye requisitos legales, auditorías corporativas, protección de datos y aspectos regulatorios.
 
 ---
 
-# Credenciales Demo
+## 2. Alcance del MVP
 
-## Administrador
+### Incluido
+
+#### Backend
+
+- API REST con FastAPI.
+- Persistencia mediante SQLModel.
+- Base de datos SQLite.
+- Validación de datos con Pydantic v2.
+- Logging estructurado básico mediante Loguru.
+- Documentación OpenAPI automática.
+
+#### Datos de asistencia
+
+- Nombre completo.
+- GGID.
+- Convocatoria.
+- Fecha de registro.
+- GUID.
+
+#### Funcionalidades
+
+- Crear asistencia.
+- Obtener una asistencia.
+- Listar asistencias.
+- Filtrar asistencias por GGID.
+- Filtrar asistencias por convocatoria.
+- Health Check.
+
+#### Calidad
+
+- Testing automatizado.
+- Linter.
+- Formateador.
+- Verificación de tipos.
+- Automatización de validaciones mediante pre-commit.
+
+---
+
+### No incluido (MVP v1)
+
+#### Seguridad y autenticación
+
+- Login.
+- Roles.
+- Azure AD.
+- OAuth.
+- JWT.
+
+#### Infraestructura
+
+- Docker.
+- PostgreSQL.
+- Alembic.
+- CI/CD.
+- Configuración multi-entorno.
+
+#### Frontend
+
+- Frontend React.
+
+#### Geolocalización
+
+- Ciudad.
+- Provincia.
+- País.
+- Latitud.
+- Longitud.
+- Geolocalización real desde navegador.
+- Almacenamiento de datos de localización.
+- Cualquier procesamiento o explotación de datos geográficos.
+
+#### IA y analítica
+
+- Azure OpenAI.
+- RAG.
+- Dashboard analítico.
+- Detección automática de patrones.
+- Exportación avanzada de informes.
+
+#### Observabilidad avanzada
+
+- OpenTelemetry.
+- Grafana.
+- ELK.
+- Loki.
+
+#### Componentes distribuidos
+
+- Redis.
+- Kafka.
+- Kubernetes.
+
+#### Gestión de registros
+
+- Modificación de asistencias (PUT/PATCH).
+- Eliminación de asistencias (DELETE).
+
+---
+
+## 3. Arquitectura
 
 ```text
-Usuario: admin
-Contraseña: 1234
-```
-
-## Invitado
-
-```text
-Usuario: invitado
-Contraseña: demo
+┌─────────────────┐
+│     Cliente     │
+└────────┬────────┘
+         │ HTTP
+         ▼
+┌─────────────────┐
+│     FastAPI     │
+├─────────────────┤
+│ Endpoints       │
+│ Validaciones    │
+│ Casos de uso    │
+│ Logging         │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│    SQLModel     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│     SQLite      │
+└─────────────────┘
 ```
 
 ---
 
-# Arquitectura Actual
+## 4. Stack Tecnológico
+
+### Backend
+
+| Tecnología | Motivo |
+|------------|---------|
+| Python 3.14 | Lenguaje principal |
+| FastAPI | API moderna y tipada |
+| SQLModel | ORM basado en SQLAlchemy |
+| Pydantic v2 | Validación y serialización |
+| Uvicorn | Servidor ASGI |
+| Loguru | Logging estructurado básico |
+
+### Gestión del Proyecto
+
+| Herramienta | Uso |
+|-------------|-----|
+| uv | Gestión de dependencias, entornos virtuales y ejecución |
+| Git | Control de versiones |
+
+### Base de Datos
+
+| Etapa | Tecnología |
+|--------|------------|
+| MVP | SQLite |
+| Futuro | PostgreSQL |
+
+La aplicación debe diseñarse para que la migración a PostgreSQL requiera únicamente cambios de configuración y de cadena de conexión.
+
+### Calidad
+
+| Herramienta | Uso |
+|-------------|-----|
+| Pytest | Testing automatizado |
+| Ruff | Linter |
+| Ruff Format | Formateo de código |
+| Ty | Verificación de tipos |
+| Coverage | Métrica orientativa |
+| Pre-commit | Automatización de validaciones |
+
+### Observabilidad
+
+| Herramienta | Uso |
+|-------------|-----|
+| Loguru | Logging estructurado |
+| Health Check Endpoint | Monitorización básica de la API |
+
+---
+
+## 5. Modelo de Dominio
+
+### Attendance
+
+| Campo | Tipo |
+|---------|------|
+| id | int |
+| guid | UUID |
+| full_name | str |
+| ggid | str |
+| event_type | str |
+| registered_at | datetime |
+
+### Consideraciones
+
+- `id` es la clave primaria interna.
+- `guid` es generado automáticamente por el sistema.
+- `registered_at` es generado automáticamente por el sistema.
+- `ggid` permite realizar búsquedas y filtrados.
+- No se almacenará información de geolocalización durante el MVP.
+
+---
+
+## 6. Endpoints MVP
+
+### Crear asistencia
+
+```http
+POST /attendances
+```
+
+### Obtener asistencia
+
+```http
+GET /attendances/{id}
+```
+
+### Listar asistencias
+
+```http
+GET /attendances
+```
+
+### Filtrar por GGID
+
+```http
+GET /attendances?ggid=123456
+```
+
+### Filtrar por convocatoria
+
+```http
+GET /attendances?event_type=lunes
+```
+
+### Health Check
+
+```http
+GET /health
+```
+
+Respuesta:
+
+```json
+{
+  "status": "ok"
+}
+```
+
+---
+
+## 7. Estructura de Proyecto
 
 ```text
 attendance/
-├─ main.py
-├─ app/
-│  ├─ database.py
-│  ├─ models/
-│  │  ├─ __init__.py
-│  │  └─ usuario.py
-│  └─ services/
-├─ database/
-│  └─ attendance.db
-├─ angular/frontend/
-└─ docs/
+│
+├── app/
+│   │
+│   ├── api/
+│   │   └── attendances.py
+│   │
+│   ├── models/
+│   │   └── attendance.py
+│   │
+│   ├── services/
+│   │   └── attendance_service.py
+│   │
+│   ├── database.py
+│   │
+│   ├── core/
+│   │   └── logging.py
+│   │
+│   └── main.py
+│
+├── tests/
+│
+├── pyproject.toml
+├── uv.lock
+├── README.md
+│
+└── attendance.db
 ```
 
----
-
-# Base de Datos
-
-## Tecnología seleccionada
-
-### SQLite
-
-El MVP utiliza SQLite como mecanismo de persistencia.
-
-### Motivos
-
-- No requiere instalación de servicios adicionales.
-- No requiere permisos de administrador.
-- Reduce la complejidad de despliegue.
-- Facilita el desarrollo en entornos corporativos restringidos.
-- Permite evolucionar rápidamente durante las primeras fases del proyecto.
-
-### Evolución prevista
-
-La arquitectura se construye utilizando SQLModel para permitir una futura migración a PostgreSQL con cambios mínimos.
-
-```text
-Estado actual
-
-SQLite
-   ↓
-SQLModel
-   ↓
-FastAPI
-
-Evolución futura
-
-PostgreSQL
-     ↓
-SQLModel
-     ↓
-FastAPI
-```
+> Durante el MVP se prioriza la simplicidad. Se evitarán capas adicionales que no aporten valor directo al alcance definido.
 
 ---
 
-# Flujo de Confirmación de Reuniones
+## 8. Criterios de Éxito del MVP
 
-## Objetivo
+El MVP se considera completado cuando:
 
-Determinar si una persona está realmente presente en una reunión programada.
+### Funcionalidad
 
-La finalidad es mejorar la calidad de la información de asistencia y presencia, evitando depender únicamente de las invitaciones de calendario.
+- Se puede registrar una asistencia.
+- Se puede consultar una asistencia.
+- Se pueden listar asistencias.
+- Se pueden filtrar asistencias por GGID.
+- Se pueden filtrar asistencias por convocatoria.
+- Los datos persisten tras reiniciar la aplicación.
+- El endpoint de Health Check responde correctamente.
 
----
+### Calidad
 
-## Flujo funcional
+- Todos los endpoints del MVP disponen de tests automatizados.
+- Objetivo orientativo de cobertura: ≥ 80%.
+- Sin errores de Ruff.
+- Sin errores reportados por Ty.
+- Todos los tests pasan correctamente.
+- Los hooks de pre-commit se ejecutan sin errores.
 
-```text
-Calendario corporativo
-        │
-        ▼
-Detección de reunión
-        │
-        ▼
-Notificación al usuario
-        │
-        ▼
-¿Estás presente en esta reunión?
-        │
-   ┌────┼────┐
-   ▼    ▼    ▼
-  Sí    No   Más tarde
-   │    │        │
-   ▼    ▼        ▼
-Presente  Ausente  Nuevo recordatorio
-```
+### Rendimiento
+
+- La aplicación responde de forma fluida en entorno local para el volumen esperado durante el MVP.
+- El sistema mantiene tiempos de respuesta adecuados para consultas y registros básicos.
 
 ---
 
-## Experiencia de usuario
+## 9. Roadmap Técnico
 
-Ejemplo:
+### Fase 1 - MVP
 
-```text
-Sprint Planning
-10:00 - 11:00
-```
+- FastAPI
+- SQLModel
+- SQLite
+- Gestión básica de asistencias
+- Logging con Loguru
+- Pytest
+- Ruff
+- Ty
+- uv
+- OpenAPI
 
-La aplicación detecta la reunión y muestra:
+### Fase 2
 
-```text
-¿Estás presente en la reunión "Sprint Planning"?
-```
+- PostgreSQL
+- Alembic
+- Docker
+- Variables de entorno
+- Configuración por entornos
 
-Opciones disponibles:
+### Fase 3
 
-- ✅ Sí, estoy presente
-- ❌ No estoy presente
-- ⏰ Recordármelo más tarde
+- Autenticación JWT
+- Roles y permisos
+- Azure AD
+- Gestión de usuarios
 
----
+### Fase 4
 
-## Información registrada
-
-Para cada confirmación se almacenará:
-
-```text
-Usuario
-Reunión
-Fecha
-Hora
-Respuesta
-Tiempo de respuesta
-```
-
-Ejemplo:
-
-```text
-Usuario: Ibar Vivas
-Reunión: Sprint Planning
-Fecha: 22/10/2026
-Hora: 10:01
-Respuesta: Presente
-```
+- Azure OpenAI
+- Extracción inteligente de métricas
+- Detección de patrones de asistencia
+- Dashboard analítico
+- Exportación de informes
 
 ---
 
-## Beneficios esperados
+## 10. Principios de Diseño
 
-- Mayor precisión en la información de asistencia.
-- Confirmación explícita por parte del usuario.
-- Generación de métricas fiables.
-- Base para cuadros de mando e informes futuros.
-- Posibilidad de detectar ausencias recurrentes o reuniones sin participación activa.
+Durante el MVP se priorizarán los siguientes principios:
 
----
-
-# Hoja de Ruta
-
-## Fase 1 · MVP Actual
-
-✅ Login básico
-
-✅ Resumen de actividad
-
-✅ Frontend Angular
-
-✅ Backend FastAPI
-
-✅ Persistencia con SQLite
-
-✅ Arquitectura basada en SQLModel
+- Simplicidad sobre sobreingeniería.
+- Arquitectura evolutiva.
+- Tipado estático en todo el código.
+- Separación clara de responsabilidades.
+- Trazabilidad mediante GUID.
+- Compatibilidad futura con PostgreSQL.
+- Código orientado a mantenibilidad y testing.
+- Desarrollo incremental basado en funcionalidades completas.
 
 ---
 
-## Fase 2 · Usuarios y Persistencia
+## Decisiones de Alcance
 
-⏳ CRUD completo de usuarios
+### Geolocalización
 
-⏳ Gestión de sesiones
+Toda funcionalidad relacionada con ubicación queda fuera del MVP hasta finalizar la evaluación legal correspondiente.
 
-⏳ Historial de actividad
+### Operaciones soportadas
 
-⏳ Configuración básica de usuarios
+El MVP contempla únicamente:
 
----
+- Creación de asistencias.
+- Consulta individual de asistencias.
+- Consulta de listados.
+- Filtrado de resultados.
 
-## Fase 3 · Reuniones
+Las operaciones de actualización y eliminación se evaluarán en futuras iteraciones en función de las necesidades del negocio.
 
-⏳ Integración con calendario corporativo
+### Filosofía del MVP
 
-⏳ Detección automática de reuniones
-
-⏳ Solicitud de confirmación de presencia
-
-⏳ Registro histórico de respuestas
-
----
-
-## Fase 4 · Métricas
-
-⏳ Dashboard de asistencia
-
-⏳ Indicadores individuales
-
-⏳ Indicadores por equipo
-
-⏳ Informes de seguimiento
-
----
-
-## Fase 5 · Escalado Organizativo
-
-⏳ Departamentos
-
-⏳ Roles
-
-⏳ Gestión de responsables
-
-⏳ Informes para managers
-
-⏳ Exportación de datos
-
----
-
-# Arranque del Proyecto
-
-## Backend
-
-```bash
-uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
-
----
-
-## Frontend
-
-```bash
-cd angular/frontend
-npm start
-```
-
----
-
-## URLs
-
-Frontend:
-
-```text
-http://localhost:4200
-```
-
-API Swagger:
-
-```text
-http://localhost:8000/docs
-```
-
----
-
-# Arranque Conjunto
-
-Desde la raíz del proyecto:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\start-dev.ps1
-```
-
-### Opciones útiles
-
-```powershell
-# Mostrar únicamente los comandos
-powershell -ExecutionPolicy Bypass -File .\scripts\start-dev.ps1 -DryRun
-```
-
-```powershell
-# Backend en nueva ventana y frontend en la actual
-powershell -ExecutionPolicy Bypass -File .\scripts\start-dev.ps1 -SameWindow
-```
-
----
-
-# Mensaje de Presentación
-
-> Hemos desarrollado una primera versión funcional orientada a validar el flujo principal de autenticación y visualización de información operativa. La solución utiliza SQLite para minimizar dependencias y facilitar su despliegue en entornos con restricciones de instalación. La arquitectura ha sido diseñada para evolucionar progresivamente hacia funcionalidades de control de presencia, gestión de reuniones y análisis de asistencia, manteniendo una base técnica escalable desde el inicio.
+El objetivo principal es disponer de una solución funcional, mantenible y validada técnicamente antes de introducir complejidad adicional relacionada con seguridad avanzada, infraestructura, analítica o inteligencia artificial.
