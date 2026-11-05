@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv/
+
+# Databases
+*.db
+
+# VS Code
+.vscode/
+
+# Angular
+node_modules/
+.angular/cache/
+
+# Logs
+*.log
+
+# Windows
+Thumbs.db
