@@ -5,7 +5,7 @@ from sqlmodel import Field, SQLModel
 
 class Usuario(SQLModel, table=True):
 
-    __tablename__="usuarios"   
+    __tablename__="usuarios"  # pyright: ignore[reportAssignmentType]
 
     id:int | None = Field(
         default=None,
