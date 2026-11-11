@@ -5,7 +5,7 @@ from sqlmodel import Field, SQLModel
 
 class Usuario(SQLModel, table=True):
 
-    __tablename__="usuarios"
+    __tablename__="usuarios" 
 
     id:int | None = Field(
         default=None,

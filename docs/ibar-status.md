@@ -1,26 +1,28 @@
 # Attendance Management System
+
 ## Estado Actual del Proyecto
 
-**Fecha:** Noviembre 2026  
-**Versión objetivo:** MVP v1
+Fecha: Noviembre 2026
+
+Versión objetivo: MVP v1
 
 ---
 
 # Resumen Ejecutivo
 
-Actualmente se ha completado la fase de fundación técnica del proyecto.
+Actualmente se ha completado la fundación técnica del backend.
 
-La infraestructura base ya está validada y funcionando:
+La infraestructura base ya está validada:
 
-- FastAPI operativo.
-- SQLModel integrado.
-- SQLite operativo.
-- Gestión de dependencias mediante uv.
-- Verificación estática mediante Ty.
-- Linter mediante Ruff.
-- Proyecto ejecutable localmente.
+- FastAPI operativo
+- SQLModel operativo
+- SQLite operativo
+- uv configurado
+- Ruff operativo
+- Ty operativo
+- Proyecto ejecutable localmente
 
-En esta fase el desarrollo se ha realizado utilizando una entidad de prueba (`Usuario`) con el objetivo de validar la arquitectura antes de implementar el dominio definitivo (`Attendance`).
+Adicionalmente se ha decidido incorporar Angular como frontend oficial del MVP.
 
 ---
 
@@ -33,270 +35,121 @@ En esta fase el desarrollo se ha realizado utilizando una entidad de prueba (`Us
 | FastAPI | ✅ |
 | SQLModel | ✅ |
 | SQLite | ✅ |
-| Modelo de prueba Usuario | ✅ |
-| Servicios | ✅ |
-| Routers | ✅ |
+| Modelo Usuario | ✅ |
+| Servicios Usuario | ✅ |
+| Routers Usuario | ✅ |
 | Ruff | ✅ |
 | Ty | ✅ |
-| Attendance | ⏳ Pendiente |
-| Loguru | ⏳ Pendiente |
-| Pytest | ⏳ Pendiente |
-| Coverage | ⏳ Pendiente |
-| Pre-commit | ⏳ Pendiente |
-| Health Check | ⏳ Pendiente |
-| README definitivo | ⏳ Pendiente |
+| Angular Workspace | ⏳ |
+| Attendance | ⏳ |
+| Health Check | ⏳ |
+| Loguru | ⏳ |
+| Pytest | ⏳ |
+| Coverage | ⏳ |
+| Pre-commit | ⏳ |
 
 ---
 
 # Arquitectura Implementada
 
-Actualmente el proyecto sigue una estructura sencilla:
-
-```text
 app/
+
 ├── models/
+
 ├── services/
+
 ├── router/
+
 ├── database.py
+
 └── main.py
-```
-
-Se ha optado por esta estructura para mantener la simplicidad durante el MVP.
 
 ---
 
-# Validaciones de Calidad
+# Arquitectura Objetivo
 
-Estado actual:
+backend/
 
-```bash
-uv run ruff check .
-```
+├── app/
 
-Resultado:
+├── tests/
 
-```text
-All checks passed
-```
+└── pyproject.toml
 
----
+frontend/
 
-```bash
-uv run ty check
-```
+├── src/
 
-Resultado:
+├── angular.json
 
-```text
-All checks passed
-```
-
----
-
-# Decisiones de Alcance
-
-## Geolocalización
-
-Queda excluida temporalmente del MVP.
-
-Motivo:
-
-Actualmente se está llevando a cabo una revisión legal y de privacidad para determinar si los datos de ubicación pueden ser almacenados o procesados.
-
-Por tanto quedan fuera del MVP:
-
-- Ciudad
-- Provincia
-- País
-- Latitud
-- Longitud
-- Geolocalización desde navegador
-- Procesamiento de ubicación
-
-La posible incorporación de esta funcionalidad se evaluará en una fase posterior.
-
----
-
-## Operaciones soportadas
-
-El MVP únicamente contempla:
-
-- Crear asistencias.
-- Consultar asistencias.
-- Listar asistencias.
-- Filtrar asistencias.
-
-Quedan fuera del MVP:
-
-- Actualización de asistencias.
-- Eliminación de asistencias.
+└── package.json
 
 ---
 
 # Próximo Hito
 
-## Implementación del dominio Attendance
+Implementar el dominio de negocio:
 
-Siguiente tarea prioritaria:
-
-```text
 app/models/attendance.py
-```
-
-Modelo previsto:
-
-```text
-Attendance
-├── id
-├── guid
-├── full_name
-├── ggid
-├── event_type
-└── registered_at
-```
-
-Donde:
-
-- `guid` será generado automáticamente.
-- `registered_at` será generado automáticamente.
 
 ---
 
 # Roadmap Inmediato
 
-## Fase 1
+## Backend
 
-Implementar modelo:
+1. Attendance model
+2. Attendance service
+3. POST /attendances
+4. GET /attendances
+5. GET /attendances/{id}
+6. Filtros
+7. Health Check
 
-```text
-Attendance
-```
+## Frontend
 
----
-
-## Fase 2
-
-Implementar servicio:
-
-```text
-attendance_service.py
-```
-
-Funcionalidad inicial:
-
-```python
-crear_attendance()
-```
+1. Crear proyecto Angular
+2. Configurar HttpClient
+3. Crear AttendanceService
+4. Crear formulario
+5. Crear listado
+6. Conectar con API
 
 ---
 
-## Fase 3
+# Objetivo MVP
 
-Implementar endpoint:
+Backend:
 
-```http
-POST /attendances
-```
+- Registro operativo
+- Consulta operativa
+- Filtros operativos
+- SQLite persistente
+- Health Check
 
----
+Frontend:
 
-## Fase 4
-
-Implementar consultas:
-
-```http
-GET /attendances
-
-GET /attendances/{id}
-
-GET /attendances?ggid=
-
-GET /attendances?event_type=
-```
-
----
-
-## Fase 5
-
-Implementar:
-
-```http
-GET /health
-```
-
-Respuesta esperada:
-
-```json
-{
-  "status": "ok"
-}
-```
-
----
-
-## Fase 6
-
-Calidad y validación:
-
-- Pytest
-- Coverage
-- Pre-commit
-- Loguru
-
----
-
-# Objetivo para considerar el MVP completado
-
-Funcionalmente:
-
-- Registro de asistencias operativo.
-- Consulta de asistencias operativa.
-- Filtrado operativo.
-- Persistencia SQLite validada.
-- Health Check operativo.
+- Crear asistencia
+- Listar asistencias
+- Consumir API FastAPI
 
 Calidad:
 
-- Ruff en verde.
-- Ty en verde.
-- Tests pasando.
-- Cobertura objetivo ≥ 80%.
-- Hooks de pre-commit operativos.
-
----
-
-# Riesgos Identificados
-
-## Geolocalización
-
-Pendiente de validación legal.
-
-No se desarrollará ninguna funcionalidad asociada hasta disponer de una decisión formal.
-
----
-
-## Alcance
-
-Evitar incorporar durante el MVP:
-
-- Docker
-- PostgreSQL
-- Alembic
-- JWT
-- OAuth
-- Azure AD
-- Azure OpenAI
-- RAG
-- Redis
-- Kafka
-- Dashboard analítico
-
-Estas funcionalidades pertenecen a fases posteriores del roadmap.
+- Ruff verde
+- Ty verde
+- Tests OK
+- Coverage >= 80%
+- Pre-commit OK
 
 ---
 
 # Estado General
 
-El proyecto dispone de una base técnica estable y validada.
+El backend dispone de una base estable validada.
 
-La prioridad inmediata es abandonar el modelo de prueba `Usuario` e implementar el dominio de negocio definitivo `Attendance`, manteniendo la simplicidad y el alcance definido para el MVP.
+La prioridad inmediata es:
+
+1. Sustituir Usuario por Attendance.
+2. Implementar endpoints del MVP.
+3. Crear frontend Angular mínimo.
+4. Incorporar testing.
