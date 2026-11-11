@@ -6,7 +6,7 @@ from sqlmodel import Field, SQLModel
 
 
 class Attendance(SQLModel, table=True):
-    __tablename__ = "attendances"
+    __tablename__= "attendances"  # pyright: ignore[reportAssignmentType]
 
     id: int | None = Field(
         default=None,
