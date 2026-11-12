@@ -1,6 +1,7 @@
 # app/services/usuario_service.py
 from pydantic import EmailStr
 from sqlmodel import Session, select
+from sqlmodel.sql._expression_select_cls import SelectOfScalar
 
 from app.database import engine
 from app.models.usuario import Usuario
@@ -14,14 +15,14 @@ def crear_usuario(  #Creat
 
             
     with Session(bind=engine) as session:
-        nuevo_usuario= Usuario(
+        nuevo_usuario: Usuario= Usuario(
             nombre_completo=nombre_completo,
             email=email
         )
 
         session.add(instance=nuevo_usuario)
         session.commit()
-        session.refresh(nuevo_usuario)
+        session.refresh(instance=nuevo_usuario)
         return nuevo_usuario
 
 
@@ -33,12 +34,12 @@ def obtener_usuario_por_email(# Read
 
     with Session(engine) as session:
 
-        sentencia = select(Usuario).where(
+        sentencia: SelectOfScalar[Usuario] = select(Usuario).where(
             Usuario.email == email
         )
 
         usuario_buscado: Usuario | None = (
-            session.exec(sentencia).first()
+            session.exec(statement=sentencia).first()
         )
 
         return usuario_buscado
@@ -49,10 +50,10 @@ def listar_usuarios() ->list[Usuario]: # Read
     
     with Session(engine) as session:
 
-        sentencia = select(Usuario)
+        sentencia: SelectOfScalar[Usuario] = select(Usuario)
 
         usuarios:list[Usuario] = list(
-            session.exec(sentencia)
+            session.exec(statement=sentencia)
         )
         return usuarios
 
@@ -61,14 +62,14 @@ def obtener_usuario_por_id( #Read
     id_usuario:int
     )-> Usuario | None:
 
-    with Session(engine) as session:
+    with Session(bind=engine) as session:
         
-        sentencia_id = select(Usuario).where(
+        sentencia_id: SelectOfScalar[Usuario] = select(Usuario).where(
             Usuario.id == id_usuario
         )
 
         usuario_por_id: Usuario | None = session.exec(
-            sentencia_id
+            statement=sentencia_id
         ).first()
         return usuario_por_id
 
